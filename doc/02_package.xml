@@ -1,27 +1,60 @@
-<chapter id="first"><title>First steps</title>
+<chapter id="package"><title>Debian package building</title>
 <para>
-Let's start by creating a package of your own (or, even better,
-adopting an existing one).
+Let's see the packaging workflow and learn it using simple examples.
 </para>
-<section id="workflow"><title>Debian package building workflow</title>
+
+<section id="package-workflow"><title>Package workflow</title>
 <para>
-If you are making a Debian package with an upstream program, the
-typical workflow of Debian package building involves generating several
-specifically named files for each step as follows.
-</para>
+The typical workflow of Debian package building involves generating several
+specifically named files.  In the file names, please replace:
 <itemizedlist>
+<listitem>the <literal><replaceable>package</replaceable></literal> part with the <emphasis role="strong">package name</emphasis>,</listitem>
+<listitem>the <literal><replaceable>version</replaceable></literal> part with the <emphasis role="strong">upstream version</emphasis>,</listitem>
+<listitem>the <literal><replaceable>revision</replaceable></literal> part with the <emphasis role="strong">Debian revision</emphasis>, and</listitem> 
+<listitem>the <literal><replaceable>arch</replaceable></literal> part with the <emphasis role="strong">package architecture</emphasis>,</listitem>
+</itemizedlist>
+as defined in the Debian Policy Manual.
+<footnote> <para> See
+<ulink url="&policy-source;">5.6.1 "Source"</ulink>, 
+<ulink url="&policy-package;">5.6.7 "Package"</ulink>, and
+<ulink url="&policy-version;">5.6.12 "Version"</ulink>.  
+The <emphasis role="strong">package architecture</emphasis> follows the
+<ulink url="&policy-architecture;">Debian Policy Manual, 5.6.8 "Architecture"</ulink> 
+and is automatically assigned by the package build process.</para></footnote>
+</para>
+<para>
+The Debian source package means the set of input files used for Debian package building and is not a single file.
+</para>
+<para>
+Each step of this outline is explained with detailed examples in later sections.
+</para>
+
+<section id="non-native-package-workflow"><title>Non-native Debian package workflow</title>
+<para>
+You create the non-native Debian package from the upstream software source code as follows.
+</para>
+<orderedlist>
 <listitem>
-<para>Get a copy of the upstream software, usually in a compressed tar format.</para>
+<para>Get a copy of the upstream software source code, usually in a compressed tarball.</para>
 <itemizedlist>
 <listitem><literal><replaceable>package</replaceable>-<replaceable>version</replaceable>.tar.gz</literal></listitem>
 </itemizedlist>
 </listitem>
 <listitem>
+<para>Untar the upstream software tarball to generate upstream source code files.</para>
+<itemizedlist>
+<listitem><literal><replaceable>package</replaceable>-<replaceable>version</replaceable>/*</literal></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>Add Debian packaging information and Debian-specific packaging modifications to the upstream source code files under the <filename>debian</filename> directory.</para>
+<itemizedlist>
+<listitem><literal><replaceable>package</replaceable>-<replaceable>version</replaceable>/debian/*</literal></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
 <para>
-Add Debian-specific packaging modifications to the upstream program under the
-<filename>debian</filename> directory, and create a non-native source package
-(that is, the set of input files used for Debian package building) in
-<literal>3.0 (quilt)</literal> format.
+Create a non-native source package in <literal>3.0 (quilt)</literal> format.
 </para>
 <itemizedlist>
 <listitem><literal><replaceable>package</replaceable>_<replaceable>version</replaceable>.orig.tar.gz</literal></listitem>
@@ -40,7 +73,8 @@ Build Debian binary packages, which are ordinary installable package files in <l
 <listitem><literal><replaceable>package</replaceable>_<replaceable>version</replaceable>-<replaceable>revision</replaceable>_<replaceable>arch</replaceable>.deb</literal></listitem>
 </itemizedlist>
 </listitem>
-</itemizedlist>
+</orderedlist>
+
 <para>
 Please note that the character separating
 <literal><replaceable>package</replaceable></literal> and
@@ -48,30 +82,28 @@ Please note that the character separating
 <literal>-</literal> (hyphen) in the tarball name to
 <literal>_</literal> (underscore) in the Debian package filenames.
 </para>
+</section>
+
+<section id="native-package-workflow"><title>Native Debian package workflow</title>
 <para>
-In the file names above, replace
-the <literal><replaceable>package</replaceable></literal> part with the <emphasis role="strong">package name</emphasis>,
-the <literal><replaceable>version</replaceable></literal> part with the <emphasis role="strong">upstream version</emphasis>,
-the <literal><replaceable>revision</replaceable></literal> part with the <emphasis role="strong">Debian revision</emphasis>,
-and the <literal><replaceable>arch</replaceable></literal> part with the <emphasis role="strong">package architecture</emphasis>,
-as defined in the Debian Policy Manual.
-<footnote> <para> See
-<ulink url="&policy-source;">5.6.1 "Source"</ulink>, 
-<ulink url="&policy-package;">5.6.7 "Package"</ulink>, and
-<ulink url="&policy-version;">5.6.12 "Version"</ulink>.  
-The <emphasis role="strong">package architecture</emphasis> follows the
-<ulink url="&policy-architecture;">Debian Policy Manual, 5.6.8 "Architecture"</ulink> 
-and is automatically assigned by the package build process.</para></footnote>
+You create the native Debian package from the Debian specific software source code as follows.
 </para>
-<para>
-If instead you are making a Debian-specific package with no upstream, the
-typical workflow of Debian package building is simpler.
-</para>
+<orderedlist>
+<listitem>
+<para>Get a copy of the Debian specific software source code files.</para>
 <itemizedlist>
+<listitem><literal><replaceable>package</replaceable>-<replaceable>version</replaceable>/*</literal></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>Add Debian packaging information to the source code files under the <filename>debian</filename> directory.</para>
+<itemizedlist>
+<listitem><literal><replaceable>package</replaceable>-<replaceable>version</replaceable>/debian/*</literal></listitem>
+</itemizedlist>
+</listitem>
 <listitem>
 <para>
-Create a native Debian source package in the <literal>3.0 (native)</literal>
-format using a single compressed tar file in which all files are included.
+Create a native source package in <literal>3.0 (quilt)</literal> format.
 </para>
 <itemizedlist>
 <listitem><literal><replaceable>package</replaceable>_<replaceable>version</replaceable>.tar.gz</literal></listitem>
@@ -86,235 +118,296 @@ Build Debian binary packages from the native Debian source package.
 <listitem><literal><replaceable>package</replaceable>_<replaceable>version</replaceable>_<replaceable>arch</replaceable>.deb</literal></listitem>
 </itemizedlist>
 </listitem>
-</itemizedlist>
+</orderedlist>
 <para>
-Each step of this outline is explained with detailed examples in later sections.
+Please note that there is only one tarball for the native Debian source package. 
 </para>
 </section>
-<section id="choose"><title>Choose your program</title>
+</section>
+
+<section id="simple"><title>Simple example</title>
+
+<section id="upstream-ex"><title>Simple upstream source example</title>
 <para>
-You have probably chosen the package you want to create.  The first thing you
-need to do is check if the package is in the distribution archive already by
-using the following.
+Let's untar a simple upstream source tar file example: <filename>hello-1.0.tar.gz</filename>  and inspect files.
+</para>
+<screen>
+ $ tar -xvzf hello-1.0.tar.gz 
+hello-1.0/
+hello-1.0/Makefile
+hello-1.0/hello.c
+</screen>
+<para>
+<filename>hello-1.0/hello.c</filename>:
+</para>
+<screen>
+#include &lt;stdio.h&gt;
+int
+main()
+{
+        printf("Hello, Debian packager!\n");
+        return 0;
+}
+</screen>
+<para>
+<filename>hello-1.0/Makefile</filename>:
+</para>
+<screen>
+all: hello
+
+hello: hello.c
+        gcc -Wall -o hello hello.c
+
+install: hello
+        install -d $(DESTDIR)/usr/bin
+        install -t $(DESTDIR)/usr/bin hello
+
+clean:
+        -rm -f hello
+
+distclean: clean
+
+.PHONY: all install clean distclean
+</screen>
+<para>
+Here, the only notable feature is the support of the
+<literal>$(DESTDIR)</literal> variable in the <filename>Makefile</filename>
+file. <footnote><para>In order for the <command>make</command> command to
+function properly, the leading 8 space characters in this
+<filename>Makefile</filename> example and similar ones in the later parts need
+to be converted to the tab code.</para></footnote>
+</para>
+</section>
+<section id="non-native-ex"><title>Non-native Debian package example</title>
+<para>
+Let's create a non-native Debian binary package using the above upstream source code file example.
+</para>
+<para>
+The first step is to create a symlink with the particular naming convention in which the "<literal>_</literal>" (underscore character) separates the package name and the upstream version.
+</para>
+<screen>
+ $ ln -sf hello-1.0.tar.gz hello_1.0.orig,tar.gz
+</screen>
+<para>
+Then, you can create a non-native Debian package source tree from the above upstream example using the <command>debmake</command> command.
+</para>
+<screen>
+ $ cd hello-1.0
+/path/to/hello-1.0
+ $ debmake
+I: sanity check of parameters
+I: analyze source
+I: generate debian/*
+I: File written: debian/source/format
+I: File written: debian/source/local-options
+I: File written: debian/patches/series
+I: File written: debian/compat
+I: File written: debian/rules
+I: File written: debian/README.Debian
+I: File written: debian/changelog
+I: File written: debian/copyright
+I: File written: debian/control
+I: File written: debian/hello.install
+I: run "debmake -x" to get more template files
+</screen>
+<para>
+For the proper packaging, you are required to make further modification using
+these autogenerated template files.  For learning purpose, let's leave such
+details and move on.  You can create a non-native Debian package using the
+<command>dbuild</command> command (or its equivalent) in this source tree.
+</para>
+<screen>
+ $ debuild -us -uc
+ dpkg-buildpackage -rfakeroot -D -us -uc -I -i
+ ...
+</screen>
+<para>
+Let's not worry about fair amount of messages here and check the generated
+files in the parent directory.
+</para>
+<screen>
+ $ cd ..
+/path/to/
+ $ ls -l
+total 36
+drwxrwxr-x 3 osamu osamu  4096 Dec 24 01:18 hello-1.0
+-rw-r--r-- 1 osamu osamu 12019 Dec 24 01:18 hello_1.0-1_amd64.build
+-rw-r--r-- 1 osamu osamu  1416 Dec 24 01:18 hello_1.0-1_amd64.changes
+-rw-r--r-- 1 osamu osamu  3222 Dec 24 01:18 hello_1.0-1_amd64.deb
+-rw-r--r-- 1 osamu osamu  1609 Dec 24 01:18 hello_1.0-1.debian.tar.gz
+-rw-r--r-- 1 osamu osamu   897 Dec 24 01:18 hello_1.0-1.dsc
+lrwxrwxrwx 1 osamu osamu    16 Dec 24 01:17 hello_1.0.orig.tar.gz -> hello-1.0.tar.gz
+-rw-rw-r-- 1 osamu osamu   380 Dec 24 00:29 hello-1.0.tar.gz
+ $ tar -tvzf hello_1.0-1.debian.tar.gz 
+drwxrwxr-x 0/0               0 2013-12-24 02:58 debian/
+-rw-rw-r-- 0/0               2 2013-12-24 02:58 debian/compat
+-rw-rw-r-- 0/0             184 2013-12-24 02:58 debian/changelog
+-rw-rw-r-- 0/0             690 2013-12-24 02:58 debian/control
+-rw-rw-r-- 0/0             964 2013-12-24 02:58 debian/copyright
+-rw-rw-r-- 0/0               1 2013-12-24 02:58 debian/hello.install
+-rw-rw-r-- 0/0             252 2013-12-24 02:58 debian/README.Debian
+-rwxr-xr-x 0/0             202 2013-12-24 02:58 debian/rules
+drwxrwxr-x 0/0               0 2013-12-24 02:58 debian/source/
+-rw-rw-r-- 0/0              12 2013-12-24 02:58 debian/source/format
+drwxrwxr-x 0/0               0 2013-12-24 02:58 debian/patches/
+-rw-rw-r-- 0/0             211 2013-12-24 02:58 debian/patches/series
+</screen>
+<para>
+The source package is a set of the following files:
 </para>
 <itemizedlist>
-<listitem>
-<para>the <command>aptitude</command> command</para>
-</listitem>
-<listitem>
-<para>the <ulink url="&packages-do;">Debian packages</ulink> web page</para>
-</listitem>
-<listitem>
-<para>the <ulink url="&packages-qa-do;">Debian Package Tracking System</ulink> web page</para>
-</listitem>
+<listitem><filename>hello_1.0.orig.tar.gz</filename></listitem>
+<listitem><filename>hello_1.0-1.debian.tar.gz</filename></listitem>
 </itemizedlist>
 <para>
-If the package already exists, well, install it!  :-) If it happens to be
-<emphasis role="strong">orphaned</emphasis> (that is, if its
-maintainer is set to <ulink url="&qa-do;">Debian QA Group</ulink>),
-you may be able to pick it up if it's still available.  You may also
-adopt a package whose maintainer has filed a Request for Adoption
-(<emphasis role="strong">RFA</emphasis>).<footnote> <para>See
-<ulink url="&devref-adopt;">Debian Developer's Reference 5.9.5.
-"Adopting a package"</ulink>.</para> </footnote>
-</para>
-<para>
-There are several package ownership status resources.
+The binary package is the following file:
 </para>
 <itemizedlist>
-<listitem>
-<para> <ulink url="&wnpp-do;">Work-Needing and Prospective Packages</ulink> </para>
-</listitem>
-<listitem>
-<para> <ulink url="&wnpp-bts;">Debian Bug report logs: Bugs in pseudo-package <systemitem role="package">wnpp</systemitem> in <literal>unstable</literal></ulink> </para>
-</listitem>
-<listitem>
-<para> <ulink url="&wnpp-dn;">Debian Packages that Need Lovin'</ulink> </para>
-</listitem>
-<listitem>
-<para> <ulink url="&wnpp-debtags;">Browse <systemitem role="package">wnpp</systemitem> bugs based on debtags</ulink> </para>
-</listitem>
+<listitem><filename>hello_1.0-1_amd64.deb</filename></listitem>
 </itemizedlist>
+</section>
+
+<section id="native-ex"><title>Native Debian package example</title>
 <para>
-As a side note, it's important to point out that Debian already has packages
-for most kinds of programs, and the number of packages already in the Debian
-archive is much larger than that of contributors with upload rights.  Thus,
-contributions to packages already in the archive are far more appreciated (and
-more likely to receive sponsorship) by other developers <footnote><para> Having
-said that, there will of course always be new programs that are worth
-packaging.  </para> </footnote>.  You can contribute in various ways.
+Let's remove <filename>*.tar.gz</filename> files in the parent directory of the
+<xref linkend="upstream-ex"/> first for the native Debian
+package example.
+</para>
+<screen>
+ $ rm *.tar.gz
+ $ ls -l
+total 4
+drwxrwxr-x 3 osamu osamu 4096 Dec 24 02:30 hello-1.0
+</screen>
+<para>
+Let's create a native Debian package source tree in this source tree using the
+<command>debmake</command> command.
+</para>
+<screen>
+ $ cd hello-1.0
+/path/to/hello-1.0
+ $ debmake -n
+I: sanity check of parameters
+I: analyze source
+I: generate debian/*
+I: File written: debian/source/format
+I: File written: debian/source/local-options
+I: File written: debian/compat
+I: File written: debian/rules
+I: File written: debian/README.Debian
+I: File written: debian/changelog
+I: File written: debian/copyright
+I: File written: debian/control
+I: File written: debian/hello.install
+I: run "debmake -x" to get more template files
+</screen>
+<para>
+Please note use of "<literal>-n</literal>" option.   For the proper packaging,
+you are required to make further modification using these autogenerated
+template files.  For learning purpose, let's leave such details and move on.
+You can create a native Debian package using the <command>dbuild</command>
+command (or its equivalent) in this source tree.
+</para>
+<screen>
+ $ debuild -us -uc
+ dpkg-buildpackage -rfakeroot -D -us -uc -I -i
+ ...
+</screen>
+<para>
+Let's not worry about fair amount of messages here and check the generated
+files in the parent directory.
+</para>
+<screen>
+ $ cd ..
+/path/to/
+ $ ls -l
+total 32
+drwxrwxr-x 3 osamu osamu  4096 Dec 24 02:30 hello-1.0
+-rw-r--r-- 1 osamu osamu 10919 Dec 24 02:30 hello_1.0_amd64.build
+-rw-r--r-- 1 osamu osamu  1139 Dec 24 02:30 hello_1.0_amd64.changes
+-rw-r--r-- 1 osamu osamu  3208 Dec 24 02:30 hello_1.0_amd64.deb
+-rw-r--r-- 1 osamu osamu   649 Dec 24 02:30 hello_1.0.dsc
+-rw-r--r-- 1 osamu osamu  1819 Dec 24 02:30 hello_1.0.tar.gz
+ $ tar -tvzf hello_1.0.tar.gz 
+drwxrwxr-x 0/0               0 2013-12-24 02:54 hello-1.0/
+-rw-rw-r-- 0/0             216 2013-12-23 21:19 hello-1.0/Makefile
+drwxrwxr-x 0/0               0 2013-12-24 02:54 hello-1.0/debian/
+-rw-rw-r-- 0/0               2 2013-12-24 02:30 hello-1.0/debian/compat
+-rw-rw-r-- 0/0             182 2013-12-24 02:30 hello-1.0/debian/changelog
+-rw-rw-r-- 0/0             690 2013-12-24 02:30 hello-1.0/debian/control
+-rw-rw-r-- 0/0             964 2013-12-24 02:30 hello-1.0/debian/copyright
+-rw-rw-r-- 0/0               1 2013-12-24 02:30 hello-1.0/debian/hello.install
+-rw-rw-r-- 0/0             252 2013-12-24 02:30 hello-1.0/debian/README.Debian
+-rwxr-xr-x 0/0             202 2013-12-24 02:30 hello-1.0/debian/rules
+drwxrwxr-x 0/0               0 2013-12-24 02:30 hello-1.0/debian/source/
+-rw-rw-r-- 0/0              13 2013-12-24 02:30 hello-1.0/debian/source/format
+drwxrwxr-x 0/0               0 2013-12-24 02:30 hello-1.0/debian/patches/
+-rw-rw-r-- 0/0             211 2013-12-24 02:30 hello-1.0/debian/patches/series
+-rw-rw-r-- 0/0              83 2013-12-23 21:20 hello-1.0/hello.c
+</screen>
+<para>
+The source package is the following file:
 </para>
 <itemizedlist>
-<listitem>
-<para>
-taking over orphaned, yet actively used, packages
-</para>
-</listitem>
-<listitem>
-<para>
-joining <ulink url="&teams;">packaging teams</ulink>
-</para>
-</listitem>
-<listitem>
-<para>
-triaging bugs of very popular packages
-</para>
-</listitem>
-<listitem>
-<para>
-preparing <ulink url="&devref-nmu;">QA or NMU uploads</ulink>
-</para>
-</listitem>
+<listitem><filename>hello_1.0.tar.gz</filename></listitem>
 </itemizedlist>
 <para>
-If you are able to adopt the package, get the sources (with something like
-<literal>apt-get source <replaceable>packagename</replaceable></literal>) and
-examine them.  This document unfortunately doesn't include comprehensive
-information about adopting packages.  Thankfully you shouldn't have a hard time
-figuring out how the package works since someone has already done the initial
-setup for you.  Keep reading, though; a lot of the advice below will still be
-applicable for your case.
-</para>
-<para>
-If the package is new, and you decide you'd like to see it in Debian, proceed
-as follows:
+The binary package is the following file:
 </para>
 <itemizedlist>
-<listitem>
-<para>
-First, you must know that the program works, and have tried it for some time to
-confirm its usefulness.
-</para>
-</listitem>
-<listitem>
-<para>
-You must check that no one else is already working on the package on the
-<ulink url="&wnpp-do;">Work-Needing and Prospective Packages</ulink> site.  
-If no one else is working on it, file an ITP (Intent
-To Package) bug report to the <systemitem role="package">wnpp</systemitem>
-pseudo-package using <command>reportbug</command>.  If someone's already on it,
-contact them if you feel you need to.  If not - find another interesting
-program that nobody is maintaining.
-</para>
-</listitem>
-<listitem>
-<para>
-The software <emphasis role="strong">must have a license</emphasis>.
-</para>
-<itemizedlist>
-<listitem>
-<para>
-For the <literal>main</literal> section, Debian Policy requires it
-<emphasis role="strong">to be fully compliant with the Debian Free Software
-Guidelines</emphasis> (<ulink url="&dfsg;">DFSG</ulink>)
-and <emphasis role="strong">not to require a package outside of
-<literal>main</literal></emphasis> for compilation or execution.  This
-is the desired case.
-</para>
-</listitem>
-<listitem>
-<para>
-For the <literal>contrib</literal> section, it must comply with the
-DFSG but it may require a package outside of <literal>main</literal> for
-compilation or execution.
-</para>
-</listitem>
-<listitem>
-<para>
-For the <literal>non-free</literal> section, it may be non-compliant
-with the DFSG but it <emphasis role="strong">must be distributable</emphasis>.
-</para>
-</listitem>
-<listitem>
-<para>
-If you are unsure about where it should go, post the license text on 
-<ulink url="&debian-legal-ldo;">debian-legal@lists.debian.org</ulink>
-and ask for advice.
-</para>
-</listitem>
+<listitem><filename>hello_1.0_amd64.deb</filename></listitem>
 </itemizedlist>
-</listitem>
-<listitem>
+
 <para>
-The program should <emphasis role="strong">not</emphasis> introduce security
-and maintenance concerns to the Debian system.
+ show skipped Now, you are ready to create a non-native Debian package using the <command>dbuild</command> command.
 </para>
-<itemizedlist>
-<listitem>
+
+<screen>
+ $ cat debian/source/format
+3.0 (quilt)
+ $ cat debian/rules
+#!/usr/bin/make -f
+# uncomment to enable verbose mode for debhelper
+#DH_VERBOSE = 1
+# uncomment to exclude VCS paths
+#DH_ALWAYS_EXCLUDE=CVS:.svn:.git
+
+%:
+	dh $@
+
+# Customize by adding override scripts
+ $ cat debian/compat
+9
+ $ cat debian/control
+Source: hello
+Section: unknown
+Priority: extra
+Maintainer: Osamu Aoki &lt;osamu@debian.org&gt;
+Build-Depends: debhelper (&gt;=9)
+Standards-Version: 3.9.4
+Homepage: &lt;insert the upstream URL, if relevant&gt;
+Vcs-Git: git://anonscm.debian.org/collab-maint/hello.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/hello.git
+
+Package: hello
+Architecture: any
+Multi-Arch: foreign
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}
+Description: &lt;insert up to 60 chars description&gt;
+ &lt;insert long description, indented with spaces&gt;
+ &lt;continued long description lines ...&gt;
+ .
+ &lt;continued long description line after a line break indicated by " ."&gt;
+ &lt;continued long description lines ...&gt;
+</screen>
 <para>
-The program should be well documented and its code needs to be understandable
-(i.e.  not obfuscated).
-</para>
-</listitem>
-<listitem>
-<para>
-You should contact the program's author(s) to check if they agree with packaging it
-and are amicable to Debian.  It is important to be able to consult with the author(s)
-in case of any problems with the program, so don't try to package
-unmaintained software.
-</para>
-</listitem>
-<listitem>
-<para>
-The program certainly should <emphasis role="strong">not</emphasis> run setuid
-root, or even better, it shouldn't need to be setuid or setgid to anything.
-</para>
-</listitem>
-<listitem>
-<para>
-The program should not be a daemon, or go in an
-<filename>*/sbin</filename> directory, or open a port as root.
-</para>
-</listitem>
-</itemizedlist>
-</listitem>
-</itemizedlist>
-<para>
-Of course, the last one is just a safety measures, and intended to save you from
-enraging users if you do something wrong in some setuid daemon...  When you gain
-more experience in packaging, you'll be able to package such software.
+Now  create a non-native Debian package using the above upstream example by executing the <command>debmake</command> command and inspecting its essential results.
 </para>
 <para>
-As a new maintainer, you are encouraged to get some experience in packaging
-with easier packages and discouraged from creating complicated packages.  
+Let's start by creating a package of your own (or, even better,
+adopting an existing one).
 </para>
-<itemizedlist>
-<listitem><para>Simple packages</para>
-<itemizedlist>
-<listitem><para>single binary package, arch = all (collection of data such as wallpaper graphics)</para></listitem>
-<listitem><para>single binary package, arch = all (executables written in an interpreted language such as POSIX shell)</para></listitem>
-</itemizedlist>
-</listitem>
-<listitem><para>Intermediate complexity packages</para>
-<itemizedlist>
-<listitem><para>single binary package, arch = any (ELF binary executables compiled from languages such as C and C++)</para></listitem>
-<listitem><para>multiple binary packages, arch = any + all (packages for ELF binary executables + documentation)</para></listitem>
-<listitem><para>upstream source in a format other than <filename>tar.gz</filename> or <filename>tar.bz2</filename></para></listitem>
-<listitem><para>upstream source containing undistributable contents</para></listitem>
-</itemizedlist>
-</listitem>
-<listitem><para>High complexity packages</para>
-<itemizedlist>
-<listitem><para>interpreter module package used by other packages</para></listitem>
-<listitem><para>generic ELF library package used by other packages</para></listitem>
-<listitem><para>multiple binary packages including an ELF library package</para></listitem>
-<listitem><para>source package with multiple upstream sources</para></listitem>
-<listitem><para>kernel module packages</para></listitem>
-<listitem><para>kernel patch packages</para></listitem>
-<listitem><para>any package with non-trivial maintainer scripts</para></listitem>
-</itemizedlist>
-</listitem>
-</itemizedlist>
-<para>
-Packaging high complexity packages is not too hard, but it requires a bit more
-knowledge. You should seek specific guidance for every complex feature. For
-example, some languages have their own sub-policy documents:
-</para>
-<itemizedlist>
-<listitem><para><ulink url="&policy-perl;">Perl policy</ulink></para></listitem>
-<listitem><para><ulink url="&policy-python;">Python policy</ulink></para></listitem>
-<listitem><para><ulink url="&policy-java;">Java policy</ulink></para></listitem>
-</itemizedlist>
 <para>
 There is another old Latin saying: <emphasis>fabricando fit faber</emphasis>
 (practice makes perfect).  It is <emphasis>highly</emphasis> recommended to
@@ -340,10 +433,12 @@ $ cd ..
 $ tar -cvzf hello-sh-1.0.tar.gz hello-sh-1.0
 </screen>
 </section>
+</section>
+
 <section id="getit"><title>Get the program, and try it out</title>
 <para>
 So the first thing to do is to find and download the original source code.
-Presumably you already have the source file that you picked up at the
+Presumably you already have the source code file that you picked up at the
 author's homepage.  Sources for free Unix programs usually come in
 <command>tar</command>+<command>gzip</command> format with the extension
 <filename>.tar.gz</filename>,
@@ -445,7 +540,7 @@ A lot of free software programs are written in the <ulink url="&c-program;">C</u
 <ulink url="&cxx;">C++</ulink> languages.  Many of these use Autotools or 
 CMake to make them portable across different platforms.  These build tools need 
 to be used to generate the <filename>Makefile</filename> and other
-required source files first.  Then, such programs are built using the usual
+required source code files first.  Then, such programs are built using the usual
 <literal>make; make install</literal>.
 </para>
 <para>
@@ -770,7 +865,7 @@ techniques.  While learning the basics, please stick to creating a fresh
 package; further explanations are given in <xref linkend="update"/>.
 </para>
 <para>
-Please note that the source file does not need to contain any build system
+Please note that the source code file does not need to contain any build system
 discussed in <xref linkend="simplemake"/> and <xref linkend="portable"/>.  It
 could be just a collection of graphical data etc.  Installation of files may be
 carried out using only <systemitem role="package">debhelper</systemitem> configuration
@@ -780,7 +875,7 @@ files such as <filename>debian/install</filename> (see
 </section>
 <section id="native-dh-make"><title>Initial native Debian package</title>
 <para>
-If a package contains source files you are only maintaining for Debian,
+If a package contains source code files you are only maintaining for Debian,
 possibly only for local use, it may be simpler to create it as a Debian
 native package. If you have source
 files in <filename>~/mypackage-1.0</filename>, you can create an initial native

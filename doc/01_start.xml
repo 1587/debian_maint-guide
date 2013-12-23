@@ -519,4 +519,229 @@ practice guidelines (once again, read the <emphasis>real
 documentation</emphasis> for details).  Good luck!
 </para>
 </section>
+<section id="choose"><title>Choose your program</title>
+<para>
+You have probably chosen the package you want to create.  The first thing you
+need to do is check if the package is in the distribution archive already by
+using the following.
+</para>
+<itemizedlist>
+<listitem>
+<para>the <command>aptitude</command> command</para>
+</listitem>
+<listitem>
+<para>the <ulink url="&packages-do;">Debian packages</ulink> web page</para>
+</listitem>
+<listitem>
+<para>the <ulink url="&packages-qa-do;">Debian Package Tracking System</ulink> web page</para>
+</listitem>
+</itemizedlist>
+<para>
+If the package already exists, well, install it!  :-) If it happens to be
+<emphasis role="strong">orphaned</emphasis> (that is, if its
+maintainer is set to <ulink url="&qa-do;">Debian QA Group</ulink>),
+you may be able to pick it up if it's still available.  You may also
+adopt a package whose maintainer has filed a Request for Adoption
+(<emphasis role="strong">RFA</emphasis>).<footnote> <para>See
+<ulink url="&devref-adopt;">Debian Developer's Reference 5.9.5.
+"Adopting a package"</ulink>.</para> </footnote>
+</para>
+<para>
+There are several package ownership status resources.
+</para>
+<itemizedlist>
+<listitem>
+<para> <ulink url="&wnpp-do;">Work-Needing and Prospective Packages</ulink> </para>
+</listitem>
+<listitem>
+<para> <ulink url="&wnpp-bts;">Debian Bug report logs: Bugs in pseudo-package <systemitem role="package">wnpp</systemitem> in <literal>unstable</literal></ulink> </para>
+</listitem>
+<listitem>
+<para> <ulink url="&wnpp-dn;">Debian Packages that Need Lovin'</ulink> </para>
+</listitem>
+<listitem>
+<para> <ulink url="&wnpp-debtags;">Browse <systemitem role="package">wnpp</systemitem> bugs based on debtags</ulink> </para>
+</listitem>
+</itemizedlist>
+<para>
+As a side note, it's important to point out that Debian already has packages
+for most kinds of programs, and the number of packages already in the Debian
+archive is much larger than that of contributors with upload rights.  Thus,
+contributions to packages already in the archive are far more appreciated (and
+more likely to receive sponsorship) by other developers <footnote><para> Having
+said that, there will of course always be new programs that are worth
+packaging.  </para> </footnote>.  You can contribute in various ways.
+</para>
+<itemizedlist>
+<listitem>
+<para>
+taking over orphaned, yet actively used, packages
+</para>
+</listitem>
+<listitem>
+<para>
+joining <ulink url="&teams;">packaging teams</ulink>
+</para>
+</listitem>
+<listitem>
+<para>
+triaging bugs of very popular packages
+</para>
+</listitem>
+<listitem>
+<para>
+preparing <ulink url="&devref-nmu;">QA or NMU uploads</ulink>
+</para>
+</listitem>
+</itemizedlist>
+<para>
+If you are able to adopt the package, get the sources (with something like
+<literal>apt-get source <replaceable>packagename</replaceable></literal>) and
+examine them.  This document unfortunately doesn't include comprehensive
+information about adopting packages.  Thankfully you shouldn't have a hard time
+figuring out how the package works since someone has already done the initial
+setup for you.  Keep reading, though; a lot of the advice below will still be
+applicable for your case.
+</para>
+<para>
+If the package is new, and you decide you'd like to see it in Debian, proceed
+as follows:
+</para>
+<itemizedlist>
+<listitem>
+<para>
+First, you must know that the program works, and have tried it for some time to
+confirm its usefulness.
+</para>
+</listitem>
+<listitem>
+<para>
+You must check that no one else is already working on the package on the
+<ulink url="&wnpp-do;">Work-Needing and Prospective Packages</ulink> site.  
+If no one else is working on it, file an ITP (Intent
+To Package) bug report to the <systemitem role="package">wnpp</systemitem>
+pseudo-package using <command>reportbug</command>.  If someone's already on it,
+contact them if you feel you need to.  If not - find another interesting
+program that nobody is maintaining.
+</para>
+</listitem>
+<listitem>
+<para>
+The software <emphasis role="strong">must have a license</emphasis>.
+</para>
+<itemizedlist>
+<listitem>
+<para>
+For the <literal>main</literal> section, Debian Policy requires it
+<emphasis role="strong">to be fully compliant with the Debian Free Software
+Guidelines</emphasis> (<ulink url="&dfsg;">DFSG</ulink>)
+and <emphasis role="strong">not to require a package outside of
+<literal>main</literal></emphasis> for compilation or execution.  This
+is the desired case.
+</para>
+</listitem>
+<listitem>
+<para>
+For the <literal>contrib</literal> section, it must comply with the
+DFSG but it may require a package outside of <literal>main</literal> for
+compilation or execution.
+</para>
+</listitem>
+<listitem>
+<para>
+For the <literal>non-free</literal> section, it may be non-compliant
+with the DFSG but it <emphasis role="strong">must be distributable</emphasis>.
+</para>
+</listitem>
+<listitem>
+<para>
+If you are unsure about where it should go, post the license text on 
+<ulink url="&debian-legal-ldo;">debian-legal@lists.debian.org</ulink>
+and ask for advice.
+</para>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>
+The program should <emphasis role="strong">not</emphasis> introduce security
+and maintenance concerns to the Debian system.
+</para>
+<itemizedlist>
+<listitem>
+<para>
+The program should be well documented and its code needs to be understandable
+(i.e.  not obfuscated).
+</para>
+</listitem>
+<listitem>
+<para>
+You should contact the program's author(s) to check if they agree with packaging it
+and are amicable to Debian.  It is important to be able to consult with the author(s)
+in case of any problems with the program, so don't try to package
+unmaintained software.
+</para>
+</listitem>
+<listitem>
+<para>
+The program certainly should <emphasis role="strong">not</emphasis> run setuid
+root, or even better, it shouldn't need to be setuid or setgid to anything.
+</para>
+</listitem>
+<listitem>
+<para>
+The program should not be a daemon, or go in an
+<filename>*/sbin</filename> directory, or open a port as root.
+</para>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+<para>
+Of course, the last one is just a safety measures, and intended to save you from
+enraging users if you do something wrong in some setuid daemon...  When you gain
+more experience in packaging, you'll be able to package such software.
+</para>
+<para>
+As a new maintainer, you are encouraged to get some experience in packaging
+with easier packages and discouraged from creating complicated packages.  
+</para>
+<itemizedlist>
+<listitem><para>Simple packages</para>
+<itemizedlist>
+<listitem><para>single binary package, arch = all (collection of data such as wallpaper graphics)</para></listitem>
+<listitem><para>single binary package, arch = all (executables written in an interpreted language such as POSIX shell)</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem><para>Intermediate complexity packages</para>
+<itemizedlist>
+<listitem><para>single binary package, arch = any (ELF binary executables compiled from languages such as C and C++)</para></listitem>
+<listitem><para>multiple binary packages, arch = any + all (packages for ELF binary executables + documentation)</para></listitem>
+<listitem><para>upstream source in a format other than <filename>tar.gz</filename> or <filename>tar.bz2</filename></para></listitem>
+<listitem><para>upstream source containing undistributable contents</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem><para>High complexity packages</para>
+<itemizedlist>
+<listitem><para>interpreter module package used by other packages</para></listitem>
+<listitem><para>generic ELF library package used by other packages</para></listitem>
+<listitem><para>multiple binary packages including an ELF library package</para></listitem>
+<listitem><para>source package with multiple upstream sources</para></listitem>
+<listitem><para>kernel module packages</para></listitem>
+<listitem><para>kernel patch packages</para></listitem>
+<listitem><para>any package with non-trivial maintainer scripts</para></listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+<para>
+Packaging high complexity packages is not too hard, but it requires a bit more
+knowledge. You should seek specific guidance for every complex feature. For
+example, some languages have their own sub-policy documents:
+</para>
+<itemizedlist>
+<listitem><para><ulink url="&policy-perl;">Perl policy</ulink></para></listitem>
+<listitem><para><ulink url="&policy-python;">Python policy</ulink></para></listitem>
+<listitem><para><ulink url="&policy-java;">Java policy</ulink></para></listitem>
+</itemizedlist>
+</section>
 </chapter>
