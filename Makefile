@@ -7,9 +7,9 @@
 # base file name excluding file extension
 MANUAL	:=	maint-guide
 # languages translated with PO files
-LANGPO	:=	ca de es fr it ja ru zh-cn zh-tw
+LANGPO	:=	
 # languages to skip generation of PDF files
-NOPDF	:=	zh-cn zh-tw
+NOPDF	:=	
 # languages to build document
 LANGALL	=	en $(LANGPO)
 
@@ -71,7 +71,7 @@ endef
 #######################################################################
 .PHONY: all
 # set LANGPO to limit language to speed up build
-all: css html txt pdf epub 
+all: css html 
 
 #######################################################################
 # $ make test      # build html for testing (for Translator)
